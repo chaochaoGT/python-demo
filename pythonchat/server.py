@@ -29,14 +29,14 @@ class CommandHandler:
         parts = line.split(' ', 1)
         cmd = parts[0]
         try:
-			line = parts[1].strip()
+            line = parts[1].strip()
         except IndexError:
-			line = ''
+            line = ''
         meth = getattr(self, 'do_' + cmd, None)
         try:
-			meth(session, line)
+            meth(session, line)
         except TypeError:
-			self.unknown(session, cmd)
+            self.unknown(session, cmd)
 
 class Room(CommandHandler):
     """
@@ -44,8 +44,8 @@ class Room(CommandHandler):
     """
 
     def __init__(self, server):
-		self.server = server
-		self.sessions = []
+        self.server = server
+        self.sessions = []
 
     def add(self, session):
         '一个用户进入房间'
@@ -130,12 +130,12 @@ class ChatSession(async_chat):
     """
 
     def __init__(self, server, sock):
-		async_chat.__init__(self, sock)
-		self.server = server
-		self.set_terminator('\n')
-		self.data = []
-		self.name = None
-		self.enter(LoginRoom(server))
+        async_chat.__init__(self, sock)
+        self.server = server
+        self.set_terminator('\n')
+        self.data = []
+        self.name = None
+        self.enter(LoginRoom(server))
 
     def enter(self, room):
         '从当前房间移除自身，然后添加到指定房间'
@@ -162,8 +162,8 @@ class ChatSession(async_chat):
             self.handle_close()
 
     def handle_close(self):
-		async_chat.handle_close(self)
-		self.enter(LogoutRoom(self.server))
+        async_chat.handle_close(self)
+        self.enter(LogoutRoom(self.server))
 
 class ChatServer(dispatcher):
     """
@@ -171,21 +171,21 @@ class ChatServer(dispatcher):
     """
 
     def __init__(self, port):
-		dispatcher.__init__(self)
-		self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.set_reuse_addr()
-		self.bind(('', port))
-		self.listen(5)
-		self.users = {}
-		self.main_room = ChatRoom(self)
+        dispatcher.__init__(self)
+        self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.set_reuse_addr()
+        self.bind(('', port))
+        self.listen(5)
+        self.users = {}
+        self.main_room = ChatRoom(self)
 
     def handle_accept(self):
-		conn, addr = self.accept()
-		ChatSession(self, conn)
+        conn, addr = self.accept()
+        ChatSession(self, conn)
 
 if __name__ == '__main__':
-	s = ChatServer(PORT)
-	try:
-		asyncore.loop()
-	except KeyboardInterrupt:
-		print
+    s = ChatServer(PORT)
+    try:
+        asyncore.loop()
+    except KeyboardInterrupt:
+        print

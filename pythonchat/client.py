@@ -4,7 +4,7 @@
 import wx
 import telnetlib
 from time import sleep
-import thread
+from threading import Thread
 
 class LoginFrame(wx.Frame):
     """
@@ -70,7 +70,7 @@ class ChatFrame(wx.Frame):
         self.sendButton.Bind(wx.EVT_BUTTON, self.send)
         self.usersButton.Bind(wx.EVT_BUTTON, self.lookUsers)
         self.closeButton.Bind(wx.EVT_BUTTON, self.close)
-        thread.start_new_thread(self.receive, ())
+        Thread.start_new_thread(self.receive, ())
         self.Show()
     
     def send(self, event):
@@ -86,21 +86,21 @@ class ChatFrame(wx.Frame):
         
     def close(self, event):
         '关闭窗口'
-    	con.write('logout\n')
-    	con.close()
-    	self.Close()
+        con.write('logout\n')
+        con.close()
+        self.Close()
         
     def receive(self):
         '接受服务器的消息'
         while True:
-        	sleep(0.6)
-        	result = con.read_very_eager()
-        	if result != '':
-        		self.chatFrame.AppendText(result)
+            sleep(0.6)
+            result = con.read_very_eager()
+            if result != '':
+                self.chatFrame.AppendText(result)
         		
 '程序运行'
 if __name__ == '__main__':
     app = wx.App()
     con = telnetlib.Telnet()
-    LoginFrame(None, -1, title = "Login", size = (280, 200))
+    LoginFrame(None, -1, title = "Login", size = (280, 300))
     app.MainLoop()
